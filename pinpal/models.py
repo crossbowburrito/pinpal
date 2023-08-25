@@ -53,7 +53,7 @@ class Profile(models.Model):
         blank=True)
     
     
-    date_modified = models.DateTimeField(User, auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.user.username

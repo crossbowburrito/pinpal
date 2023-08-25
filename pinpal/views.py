@@ -2,13 +2,39 @@ from django.shortcuts import render
 from .models import Profile, Board, Sticky
 from django.contrib import messages
 from django.shortcuts import redirect
+from .forms import BoardForm, StickyForm
 
 
 def home(request):
     if request.user.is_authenticated:
+        board_form = BoardForm(request.POST or None)
+        sticky_form = StickyForm(request.POST or None)
+        if request.method == "POST":
+            action = request.POST.get('action')
+            if action == 'new_sticky':
+                if sticky_form.is_valid():
+                    sticky = sticky_form.save(commit=False)
+                    sticky.user = request.user
+                    sticky.save()
+                    messages.success(request, "Sticky created successfully!")
+                    return redirect('home')
+            elif action == 'new_board':
+                if board_form.is_valid():
+                    board = board_form.save(commit=False)
+                    board.user = request.user
+                    board.save()
+                    messages.success(request, "Board created successfully!")
+                    return redirect('home')
+            
         boards = Board.objects.all().order_by('-date_modified')
         stickys = Sticky.objects.all()
-    return render(request, 'home.html', {"boards":boards})
+        return render(request, 'home.html', {"boards":boards, "board_form":board_form, "sticky_form":sticky_form, "stickys":stickys})
+
+    else:
+        boards = Board.objects.all().order_by('-date_modified')
+        stickys = Sticky.objects.all()
+        return render(request, 'home.html', {"boards":boards, "board_form":board_form, "sticky_form":sticky_form, "stickys":stickys})
+
 def profile_list(request):
     if request.user.is_authenticated:
         profiles = Profile.objects.all()

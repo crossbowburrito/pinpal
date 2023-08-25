@@ -12,14 +12,44 @@
 {% for board in boards %}
 
 <div class="alert alert-warning" role="alert">
-    {{ board }}
-</div><br /><br />
+    <h3>{{ board.title }}</h3><br />
+    <small class="text-muted">
+   <a href='#'>{{board.stickies.count}} stickies</a>
+    </small><br /><br />
+    {% for sticky in board.stickies.all %}
+       <h4>{{ sticky.title }}</h4>
+       <small class="text-muted">
+        {{ sticky.body }}<br />
+        </small>
+    {% endfor %}
+
+    <br />
+    <small class="text-muted">
+        Created by @{{ board.user.username|lower }} on {{ board.created_at|date:"d/m/Y" }}
+    </small>
+    </div><br /><br />
 
 {% endfor %}
 
 </div>
 
 <div class="col-4">
-    <br /><br /><br />TEST</div></div></div>
+    <br /><br /><br />
+
+    {% if board_form or sticky_form %}
+    <form method=POST>
+        {% csrf_token %}
+        {{ board_form.as_p }}
+        <button type="submit" name="action" value="new_board" class="btn btn-primary">New Board</button>
+    </form>
+    <br /><br /><br />
+    <form method=POST>
+        {% csrf_token %}
+        {{ sticky_form.as_p }}
+        <button type="submit" name="action" value="new_sticky" class="btn btn-warning">New Sticky</button><br/>
+    </form>
+    
+{% endif %}
+</div>
 
 {% endblock %}
