@@ -1,0 +1,7 @@
+{% for sticky in stickies %}
+    <div>
+        <h3>{{ sticky.title }}</h3>
+        <p>{{ sticky.body }}</p>
+        <a href="{% url 'remove_sticky_from_board' board.id sticky.id %}">Remove</a>
+    </div>
+{% endfor %}
